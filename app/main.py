@@ -6,6 +6,8 @@ from aiogram.enums import ParseMode
 
 from app.core.settings import get_settings
 from app.bot.routers.core import router as core_router
+from app.bot.routers.shopping import router as shopping_router
+from app.infrastructure.db.init_db import create_all
 
 
 async def main() -> None:
@@ -16,7 +18,9 @@ async def main() -> None:
 	dp = Dispatcher()
 
 	dp.include_router(core_router)
+	dp.include_router(shopping_router)
 
+	create_all()  # ensure tables exist for MVP
 	await dp.start_polling(bot)
 
 
