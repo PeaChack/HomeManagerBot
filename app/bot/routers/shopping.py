@@ -5,6 +5,7 @@ from aiogram.types import Message
 from app.infrastructure.db.base import get_session
 from app.domain.services.shopping_service import ShoppingService
 from app.domain.services.family_service import FamilyService
+from app.bot.keyboards.main import shopping_list_inline
 
 
 router = Router(name='shopping')
@@ -57,12 +58,11 @@ async def buy_list(message: Message) -> None:
             await message.answer('Не задана семья. Укажи family_id или установи активную: /family_set <id>')
             return
         service = ShoppingService(session)
-        items = service.list(family_id=family_id, include_done=False)
+        items = service.list_items(family_id=family_id, include_done=False)
         if not items:
             await message.answer('Список покупок пуст')
             return
-        lines = [f'{item.id}. {item.title}' for item in items]
-        await message.answer('\n'.join(lines))
+        await message.answer('Список покупок:', reply_markup=shopping_list_inline(items, include_clear=True, family_id=family_id))
 
 
 @router.message(Command('buy_done'))

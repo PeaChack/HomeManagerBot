@@ -20,6 +20,9 @@ class MealsService:
 	def add_ingredient(self, *, dish_id: int, title: str) -> DishIngredient:
 		return self.repo.add_ingredient(dish_id=dish_id, title=title)
 
+	def list_ingredients(self, *, dish_id: int) -> Sequence[DishIngredient]:
+		return self.repo.list_ingredients(dish_id=dish_id)
+
 	def plan_meal(self, *, family_id: int, on_date: date, dish_id: int, notes: str | None = None) -> PlannedMeal:
 		return self.repo.plan_meal(family_id=family_id, on_date=on_date, dish_id=dish_id, notes=notes)
 

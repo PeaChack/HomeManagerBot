@@ -25,6 +25,10 @@ class MealsRepository:
 		self.session.add(ing)
 		return ing
 
+	def list_ingredients(self, *, dish_id: int) -> Sequence[DishIngredient]:
+		stmt = select(DishIngredient).where(DishIngredient.dish_id == dish_id).order_by(DishIngredient.id.asc())
+		return list(self.session.execute(stmt).scalars().all())
+
 	def plan_meal(self, *, family_id: int, on_date: date, dish_id: int, notes: str | None = None) -> PlannedMeal:
 		pm = PlannedMeal(family_id=family_id, date=on_date, dish_id=dish_id, notes=notes)
 		self.session.add(pm)

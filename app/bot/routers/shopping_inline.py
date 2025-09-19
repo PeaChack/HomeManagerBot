@@ -30,7 +30,7 @@ async def buy_check(message: Message) -> None:
 			await message.answer('Не задана семья. Укажи family_id или установи активную: /family_set <id>')
 			return
 		service = ShoppingService(session)
-		items = service.list(family_id=family_id, include_done=False)
+		items = service.list_items(family_id=family_id, include_done=False)
 		if not items:
 			await message.answer('Список покупок пуст')
 			return
@@ -44,6 +44,19 @@ async def on_done(cb: CallbackQuery) -> None:
 		service = ShoppingService(session)
 		service.done(item_id=item_id)
 	await cb.answer('Отмечено')
-	await cb.message.delete() if cb.message else None
+	if cb.message:
+		await cb.message.delete()
+
+
+@router.callback_query(F.data.startswith('shp_clear:'))
+async def on_clear(cb: CallbackQuery) -> None:
+	# Очистить купленные позиции в семье
+	_, family_id = cb.data.split(':', 1)
+	with get_session() as session:
+		service = ShoppingService(session)
+		service.clear_done(family_id=int(family_id))
+	await cb.answer('Очищено')
+	if cb.message:
+		await cb.message.delete()
 
 

@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func
 from sqlalchemy.orm import Session
 
 from app.domain.models import ShoppingItem
@@ -31,5 +31,16 @@ class ShoppingRepository:
 		stmt = delete(ShoppingItem).where(ShoppingItem.family_id == family_id, ShoppingItem.is_done.is_(True))
 		result = self.session.execute(stmt)
 		return result.rowcount or 0
+
+	def top_titles_for_user(self, *, user_id: int, family_id: int, limit: int = 10) -> list[str]:
+		stmt = (
+			select(ShoppingItem.title, func.count(ShoppingItem.id).label('cnt'))
+			.where(ShoppingItem.created_by == user_id, ShoppingItem.family_id == family_id)
+			.group_by(ShoppingItem.title)
+			.order_by(func.count(ShoppingItem.id).desc())
+			.limit(limit)
+		)
+		rows = self.session.execute(stmt).all()
+		return [r[0] for r in rows]
 
 
