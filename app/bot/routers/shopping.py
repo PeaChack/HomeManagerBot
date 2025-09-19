@@ -45,13 +45,7 @@ async def buy_add(message: Message) -> None:
         service = ShoppingService(session)
         service.add(family_id=family_id, title=title, created_by=message.from_user.id if message.from_user else None)
         await message.answer(f'Добавлено в покупки: {title}')
-	if not title:
-		await message.answer('Название позиции не может быть пустым')
-		return
-	with get_session() as session:
-		service = ShoppingService(session)
-		service.add(family_id=family_id, title=title, created_by=message.from_user.id if message.from_user else None)
-		await message.answer(f'Добавлено в покупки: {title}')
+
 
 
 @router.message(Command('buy_list'))
@@ -63,28 +57,28 @@ async def buy_list(message: Message) -> None:
             await message.answer('Не задана семья. Укажи family_id или установи активную: /family_set <id>')
             return
         service = ShoppingService(session)
-		items = service.list(family_id=family_id, include_done=False)
-		if not items:
-			await message.answer('Список покупок пуст')
-			return
-		lines = [f'{item.id}. {item.title}' for item in items]
-		await message.answer('\n'.join(lines))
+        items = service.list(family_id=family_id, include_done=False)
+        if not items:
+            await message.answer('Список покупок пуст')
+            return
+        lines = [f'{item.id}. {item.title}' for item in items]
+        await message.answer('\n'.join(lines))
 
 
 @router.message(Command('buy_done'))
 async def buy_done(message: Message) -> None:
-	# Формат: /buy_done <item_id>
-	parts = message.text.split() if message.text else []
-	if len(parts) < 2 or not parts[1].isdigit():
-		await message.answer('Использование: /buy_done <item_id>')
-		return
-	item_id = int(parts[1])
-	with get_session() as session:
-		service = ShoppingService(session)
-		updated = service.done(item_id=item_id)
-		if updated:
-			await message.answer(f'Отмечено как куплено: #{item_id}')
-		else:
-			await message.answer('Позиция не найдена')
+    # Формат: /buy_done <item_id>
+    parts = message.text.split() if message.text else []
+    if len(parts) < 2 or not parts[1].isdigit():
+        await message.answer('Использование: /buy_done <item_id>')
+        return
+    item_id = int(parts[1])
+    with get_session() as session:
+        service = ShoppingService(session)
+        updated = service.done(item_id=item_id)
+        if updated:
+            await message.answer(f'Отмечено как куплено: #{item_id}')
+        else:
+            await message.answer('Позиция не найдена')
 
 

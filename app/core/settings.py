@@ -3,7 +3,7 @@ from pydantic import Field
 
 
 class Settings(BaseSettings):
-	model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', env_prefix='HMB_')
+	model_config = SettingsConfigDict(env_file=('.env', 'env'), env_file_encoding='utf-8', env_prefix='HMB_')
 
 	BOT_TOKEN: str = Field(..., description='Telegram bot token')
 	DB_URL: str = Field('sqlite:///home_manager.db', description='SQLAlchemy database URL')

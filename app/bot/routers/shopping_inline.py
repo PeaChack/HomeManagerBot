@@ -1,5 +1,5 @@
-from aiogram import Router
-from aiogram.filters import Command, Text
+from aiogram import Router, F
+from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from app.infrastructure.db.base import get_session
@@ -37,7 +37,7 @@ async def buy_check(message: Message) -> None:
 		await message.answer('Отметь купленные позиции:', reply_markup=_kb_for_items(items))
 
 
-@router.callback_query(Text(startswith='shp_done:'))
+@router.callback_query(F.data.startswith('shp_done:'))
 async def on_done(cb: CallbackQuery) -> None:
 	item_id = int(cb.data.split(':', 1)[1]) if cb.data else 0
 	with get_session() as session:
